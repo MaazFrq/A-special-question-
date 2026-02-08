@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #ffc1d1;
+            background: linear-gradient(180deg, #ffc1d1 0%, #ffafbd 100%);
             font-family: 'Arial', sans-serif;
             overflow: hidden;
             touch-action: manipulation;
@@ -21,35 +21,37 @@
         #content {
             text-align: center;
             width: 100%;
+            z-index: 10;
         }
 
-        .gif-container {
-            height: 200px;
+        .emoji-display {
+            font-size: 100px;
+            height: 150px;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+            animation: float 3s ease-in-out infinite;
         }
 
-        .gif-container img {
-            max-height: 100%;
-            border-radius: 15px;
-            /* Added a border to see if it's loading */
-            border: 2px solid rgba(255,255,255,0.3);
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         h1 {
-            font-size: 1.7rem;
+            font-size: 1.8rem;
             color: #fff;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
             margin: 10px 20px;
         }
 
         .subtext {
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: #fff;
             opacity: 0.9;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .btn-group {
@@ -57,17 +59,17 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
-            min-height: 120px;
+            min-height: 150px;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.1rem;
+            padding: 15px 35px;
+            font-size: 1.2rem;
             border: none;
             border-radius: 50px;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s ease, left 0.2s ease, top 0.2s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
             cursor: pointer;
         }
 
@@ -75,32 +77,45 @@
             background-color: #ff4d6d;
             color: white;
             z-index: 1000;
-            position: relative;
         }
 
         #noBtn {
             background-color: white;
             color: #ff4d6d;
             position: relative;
-            z-index: 999;
         }
 
-        .fade-in {
-            animation: fadeIn 0.5s ease-in;
+        /* Cry Emoji Animation */
+        .cry-particle {
+            position: fixed;
+            font-size: 24px;
+            pointer-events: none;
+            animation: flyAway 1s forwards;
+            z-index: 2000;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes flyAway {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tw), var(--th)) scale(1.5); opacity: 0; }
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 20px;
+            animation: fall linear forwards;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh); }
         }
     </style>
 </head>
 <body>
 
     <div id="content">
-        <div class="gif-container">
-            <img id="mainGif" src="https://media.tenor.com/90_p9D9603QAAAAi/peach-goma.gif" alt="cute cat">
-        </div>
+        <div class="emoji-display" id="emoji">🤗</div>
         <h1 id="questionText">DO you love me? 🤗</h1>
         <div class="subtext" id="subtext">~Maaz is all yours</div>
 
@@ -113,7 +128,7 @@
     <script>
         const questionText = document.getElementById('questionText');
         const subtext = document.getElementById('subtext');
-        const mainGif = document.getElementById('mainGif');
+        const emojiDisplay = document.getElementById('emoji');
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const content = document.getElementById('content');
@@ -121,21 +136,58 @@
         let step = 1;
         let yesScale = 1;
 
-        // Switched to Tenor Direct GIFs for better GitHub compatibility
         const slides = {
-            1: { q: "DO you love me? 🤗", s: "~Maaz is all yours", g: "https://media.tenor.com/90_p9D9603QAAAAi/peach-goma.gif" },
-            2: { q: "Please think again! 🙄", s: "itni jaldi nahi matt bolo 😟", g: "https://media.tenor.com/fC99vF86O_0AAAAi/peach-goma.gif" },
-            3: { q: "Ek aur baar Soch lo! 😟", s: "kyu aisa kar rahi ho 😟", g: "https://media.tenor.com/D_i-nS_f68oAAAAi/mochi-mochi-peach-cat-peach-and-goma.gif" },
-            4: { q: "Man jao na! Kitna bhav khaogi 😭", s: "bhut glt baat hai yaar 😭", g: "https://media.tenor.com/vH3_NfL_V3gAAAAi/peach-goma.gif" }
+            1: { q: "DO you love me? 🤗", s: "~Maaz is all yours", e: "🤗" },
+            2: { q: "Please think again! 🙄", s: "itni jaldi nahi matt bolo 😟", e: "🙄" },
+            3: { q: "Ek aur baar Soch lo! 😟", s: "kyu aisa kar rahi ho 😟", e: "😟" },
+            4: { q: "Man jao na! Kitna bhav khaogi 😭", s: "bhut glt baat hai yaar 😭", e: "😭" }
         };
+
+        function spawnCry(e) {
+            // Support both click and touch events
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+            
+            for(let i=0; i<6; i++) {
+                const cry = document.createElement('div');
+                cry.className = 'cry-particle';
+                cry.innerText = '😭';
+                cry.style.left = x + 'px';
+                cry.style.top = y + 'px';
+                
+                // Randomize direction
+                cry.style.setProperty('--tw', (Math.random() * 200 - 100) + 'px');
+                cry.style.setProperty('--th', (Math.random() * -200 - 50) + 'px');
+                
+                document.body.appendChild(cry);
+                setTimeout(() => cry.remove(), 1000);
+            }
+        }
 
         function updateContent() {
             questionText.innerText = slides[step].q;
             subtext.innerText = slides[step].s;
-            mainGif.src = slides[step].g;
+            emojiDisplay.innerText = slides[step].e;
         }
 
-        noBtn.addEventListener('click', () => {
+        function moveNoButton() {
+            const padding = 80;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            const randomX = Math.floor(Math.random() * maxX) + 40;
+            const randomY = Math.floor(Math.random() * maxY) + 40;
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+
+            yesScale += 0.4;
+            yesBtn.style.transform = `scale(${yesScale})`;
+        }
+
+        noBtn.addEventListener('click', (e) => {
+            spawnCry(e);
             if (step < 4) {
                 step++;
                 updateContent();
@@ -144,39 +196,32 @@
             }
         });
 
-        // Specific fix for mobile dodging
         noBtn.addEventListener('touchstart', (e) => {
+            spawnCry(e);
             if (step === 4) {
                 e.preventDefault();
                 moveNoButton();
             }
         });
 
-        function moveNoButton() {
-            const padding = 80; // Large buffer to keep button visible
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-            
-            const randomX = Math.floor(Math.random() * maxX) + (padding / 2);
-            const randomY = Math.floor(Math.random() * maxY) + (padding / 2);
-
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
-
-            yesScale += 0.5;
-            yesBtn.style.transform = `scale(${yesScale})`;
-        }
-
         yesBtn.addEventListener('click', () => {
             content.innerHTML = `
-                <div class="fade-in">
-                    <img src="https://media.tenor.com/X9S799YpS70AAAAi/peach-goma.gif" style="width:180px;">
-                    <h1 style="margin-top:20px;">Hehe, I knew it! ❤️</h1>
-                    <p style="color:white; font-size:1.3rem; font-weight:bold;">Love you a lot 🥰</p>
-                </div>
+                <div class="emoji-display">💖</div>
+                <h1>Hehe, I knew it! ❤️</h1>
+                <p style="color:white; font-size:1.3rem; font-weight:bold;">Love you a lot 🥰</p>
             `;
+            setInterval(createHeart, 300);
         });
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.innerText = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
     </script>
 </body>
 </html>
