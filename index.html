@@ -12,7 +12,7 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #ffc1d1;
+            background-color: #ffc1d1; /* Full Pink Background */
             font-family: 'Arial', sans-serif;
             overflow: hidden;
             touch-action: manipulation;
@@ -21,11 +21,11 @@
         #content {
             text-align: center;
             width: 100%;
-            transition: opacity 0.4s ease-in-out;
+            transition: opacity 0.3s ease;
         }
 
         .gif-container {
-            height: 220px;
+            height: 200px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -35,15 +35,13 @@
         .gif-container img {
             max-height: 100%;
             border-radius: 15px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
         }
 
         h1 {
             font-size: 1.7rem;
             color: #fff;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
             margin: 10px 20px;
-            line-height: 1.3;
         }
 
         .subtext {
@@ -58,7 +56,7 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
-            min-height: 120px; /* Space for growing button */
+            min-height: 100px;
         }
 
         button {
@@ -68,7 +66,7 @@
             border-radius: 50px;
             font-weight: bold;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.2s ease;
             cursor: pointer;
         }
 
@@ -84,14 +82,13 @@
             position: relative;
         }
 
-        /* Smooth animation for text changes */
         .fade-in {
             animation: fadeIn 0.5s ease-in;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -99,7 +96,7 @@
 
     <div id="content">
         <div class="gif-container">
-            <img id="mainGif" src="https://media.tenor.com/90_p9D9603QAAAAi/peach-goma.gif" alt="gif">
+            <img id="mainGif" src="https://media1.tenor.com/m/90_p9D9603QAAAAC/peach-goma.gif" alt="gif">
         </div>
         <h1 id="questionText">DO you love me? 🤗</h1>
         <div class="subtext" id="subtext">~Maaz is all yours</div>
@@ -121,11 +118,12 @@
         let step = 1;
         let yesScale = 1;
 
+        // Optimized Tenor Links
         const slides = {
-            1: { q: "DO you love me? 🤗", s: "~Maaz is all yours", g: "https://media.tenor.com/90_p9D9603QAAAAi/peach-goma.gif" },
-            2: { q: "Please think again! 🙄", s: "itni jaldi nahi matt bolo 😟", g: "https://media.tenor.com/fC99vF86O_0AAAAi/peach-goma.gif" },
-            3: { q: "Ek aur baar Soch lo! 😟", s: "kyu aisa kar rahi ho 😟", g: "https://media.tenor.com/D_i-nS_f68oAAAAi/mochi-mochi-peach-cat-peach-and-goma.gif" },
-            4: { q: "Man jao na! Kitna bhav khaogi 😭", s: "bhut glt baat hai yaar 😭", g: "https://media.tenor.com/vH3_NfL_V3gAAAAi/peach-goma.gif" }
+            1: { q: "DO you love me? 🤗", s: "~Maaz is all yours", g: "https://media1.tenor.com/m/90_p9D9603QAAAAC/peach-goma.gif" },
+            2: { q: "Please think again! 🙄", s: "itni jaldi nahi matt bolo 😟", g: "https://media1.tenor.com/m/fC99vF86O_0AAAAC/peach-goma.gif" },
+            3: { q: "Ek aur baar Soch lo! 😟", s: "kyu aisa kar rahi ho 😟", g: "https://media1.tenor.com/m/D_i-nS_f68oAAAAC/mochi-mochi-peach-cat-peach-and-goma.gif" },
+            4: { q: "Man jao na! Kitna bhav khaogi 😭", s: "bhut glt baat hai yaar 😭", g: "https://media1.tenor.com/m/vH3_NfL_V3gAAAAC/peach-goma.gif" }
         };
 
         function updateContent() {
@@ -147,7 +145,7 @@
             }
         });
 
-        // Mobile touch logic
+        // Prevents the button from disappearing on mobile tap
         noBtn.addEventListener('touchstart', (e) => {
             if (step === 4) {
                 e.preventDefault();
@@ -156,27 +154,25 @@
         });
 
         function moveNoButton() {
-            // Calculate screen bounds with 50px safety margin
-            const padding = 50;
+            const padding = 60; // Larger padding to stay away from edges
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
             const maxY = window.innerHeight - noBtn.offsetHeight - padding;
             
-            const randomX = Math.floor(Math.random() * maxX) + (padding/2);
-            const randomY = Math.floor(Math.random() * maxY) + (padding/2);
+            const randomX = Math.floor(Math.random() * maxX) + (padding / 2);
+            const randomY = Math.floor(Math.random() * maxY) + (padding / 2);
 
             noBtn.style.position = 'fixed';
-            noBtn.style.left = `${randomX}px`;
-            noBtn.style.top = `${randomY}px`;
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
 
-            // Make Yes button grow
-            yesScale += 0.4;
+            yesScale += 0.45;
             yesBtn.style.transform = `scale(${yesScale})`;
         }
 
         yesBtn.addEventListener('click', () => {
             content.innerHTML = `
                 <div class="fade-in">
-                    <img src="https://media.tenor.com/X9S799YpS70AAAAi/peach-goma.gif" style="width:180px; border-radius:15px;">
+                    <img src="https://media1.tenor.com/m/X9S799YpS70AAAAC/peach-goma.gif" style="width:180px;">
                     <h1 style="margin-top:20px;">Hehe, I knew it! ❤️</h1>
                     <p style="color:white; font-size:1.3rem; font-weight:bold;">Love you a lot 🥰</p>
                 </div>
