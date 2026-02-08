@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For You ❤️</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffc1d1;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        #content {
+            text-align: center;
+            width: 100%;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .gif-container {
+            height: 220px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .gif-container img {
+            max-height: 100%;
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            margin: 10px 20px;
+            line-height: 1.3;
+        }
+
+        .subtext {
+            font-size: 1rem;
+            color: #fff;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            min-height: 120px; /* Space for growing button */
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+
+        #yesBtn {
+            background-color: #ff4d6d;
+            color: white;
+            z-index: 1000;
+        }
+
+        #noBtn {
+            background-color: white;
+            color: #ff4d6d;
+            position: relative;
+        }
+
+        /* Smooth animation for text changes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="content">
+        <div class="gif-container">
+            <img id="mainGif" src="https://media.tenor.com/90_p9D9603QAAAAi/peach-goma.gif" alt="gif">
+        </div>
+        <h1 id="questionText">DO you love me? 🤗</h1>
+        <div class="subtext" id="subtext">~Maaz is all yours</div>
+
+        <div class="btn-group">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <script>
+        const questionText = document.getElementById('questionText');
+        const subtext = document.getElementById('subtext');
+        const mainGif = document.getElementById('mainGif');
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const content = document.getElementById('content');
+
+        let step = 1;
+        let yesScale = 1;
+
+        const slides = {
+            1: { q: "DO you love me? 🤗", s: "~Maaz is all yours", g: "https://media.tenor.com/90_p9D9603QAAAAi/peach-goma.gif" },
+            2: { q: "Please think again! 🙄", s: "itni jaldi nahi matt bolo 😟", g: "https://media.tenor.com/fC99vF86O_0AAAAi/peach-goma.gif" },
+            3: { q: "Ek aur baar Soch lo! 😟", s: "kyu aisa kar rahi ho 😟", g: "https://media.tenor.com/D_i-nS_f68oAAAAi/mochi-mochi-peach-cat-peach-and-goma.gif" },
+            4: { q: "Man jao na! Kitna bhav khaogi 😭", s: "bhut glt baat hai yaar 😭", g: "https://media.tenor.com/vH3_NfL_V3gAAAAi/peach-goma.gif" }
+        };
+
+        function updateContent() {
+            content.style.opacity = 0;
+            setTimeout(() => {
+                questionText.innerText = slides[step].q;
+                subtext.innerText = slides[step].s;
+                mainGif.src = slides[step].g;
+                content.style.opacity = 1;
+            }, 300);
+        }
+
+        noBtn.addEventListener('click', () => {
+            if (step < 4) {
+                step++;
+                updateContent();
+            } else {
+                moveNoButton();
+            }
+        });
+
+        // Mobile touch logic
+        noBtn.addEventListener('touchstart', (e) => {
+            if (step === 4) {
+                e.preventDefault();
+                moveNoButton();
+            }
+        });
+
+        function moveNoButton() {
+            // Calculate screen bounds with 50px safety margin
+            const padding = 50;
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            const randomX = Math.floor(Math.random() * maxX) + (padding/2);
+            const randomY = Math.floor(Math.random() * maxY) + (padding/2);
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+
+            // Make Yes button grow
+            yesScale += 0.4;
+            yesBtn.style.transform = `scale(${yesScale})`;
+        }
+
+        yesBtn.addEventListener('click', () => {
+            content.innerHTML = `
+                <div class="fade-in">
+                    <img src="https://media.tenor.com/X9S799YpS70AAAAi/peach-goma.gif" style="width:180px; border-radius:15px;">
+                    <h1 style="margin-top:20px;">Hehe, I knew it! ❤️</h1>
+                    <p style="color:white; font-size:1.3rem; font-weight:bold;">Love you a lot 🥰</p>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
